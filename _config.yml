@@ -4,10 +4,15 @@
 
 # Site
 title: Hexo
-subtitle:
-description:
-keywords:
-author: John Doe
+subtitle: xx
+description: xx
+keywords: 
+  - xxx
+author: double
+email: 2637309949@qq.com
+loc: Guanzhou
+focus: Nodejs,Golang
+github: https://github.com/2637309949
 language: en
 timezone:
 
