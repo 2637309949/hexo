@@ -673,8 +673,7 @@ var HexoSearch;
           index_content = post_content.indexOf(word);
           if (index_title < 0 && index_content < 0) {
             foundMatch = false;
-          }
-          else {
+          } else {
             foundMatch = true;
             if (index_content < 0) {
               index_content = 0;
@@ -714,8 +713,9 @@ var HexoSearch;
       var results = [],
           html = "";
       $.each(data, function(index, post) {
-        if (self.contentSearch(post, queryText))
+        if (self.contentSearch(post, queryText)) {
           html += self.buildResult(post.permalink, post.title, post.digest);
+        }
       });
       return html;
     };
