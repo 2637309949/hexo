@@ -1,5 +1,5 @@
 ---
-title: Hexo 笔记
+title: Hexo 使用教程
 date: 2017-05-26 12:12:57
 categories: 
 - Hexo
@@ -12,7 +12,7 @@ Welcome to [Hexo](https://hexo.io/)! This is your very first post. Check [docume
 ### Create a new post
 
 ``` bash
-$ hexo new "My New Post"
+$ hexo new post "go-reflect"
 ```
 
 More info: [Writing](https://hexo.io/docs/writing.html)
