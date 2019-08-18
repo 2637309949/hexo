@@ -31,9 +31,6 @@ menu:
   - name: Archives
     slug: archives
     url: /archives
-  - name: Gallery
-    slug: gallery
-    url: /gallery
   - name: About
     slug: about
     url: /about
