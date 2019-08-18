@@ -2,38 +2,47 @@
     width: 100%;
     padding-right: @side-width + @gap;
     float: left;
+
     .post-list {
         position: relative;
         margin: 0px auto;
         columns: 400px;
         column-gap: 0;
         margin: -@gap /2;
+
         @media(max-width: @on-phone) {
             margin: 0;
         }
     }
+
     #comments {
         position: relative;
         padding-top: 1.5*@gap;
         background: white;
+
         @media (max-width: @on-phone) {
             padding-top: @gap;
         }
     }
-    .post-wrapper{
+
+    .post-wrapper {
         // for firefox
         column-break-inside: avoid;
         break-inside: avoid-column;
     }
+
     .mobile-post() {
         .post {
             padding: 1.5 * @gap @gap;
+
             .meta {
                 margin-bottom: @gap;
+
                 .title {
                     font-size: @article-title-size-sm;
                 }
             }
+
             .full-width {
                 margin-left: -@gap;
                 margin-right: -@gap;
@@ -41,10 +50,12 @@
                 padding-right: @gap;
                 width:~"calc(100% + 2 * @{gap})"
             }
+
             .auto-padding {
                 padding-left: @gap;
                 padding-right: @gap;
             }
+
             img,
             .highlight {
                 margin-left: -@gap;
@@ -54,49 +65,62 @@
             }
         }
     }
+
     .post-wrapper {
         padding: @gap /2;
         .mobile-post();
+
         .tags {
             margin-bottom: -1.5*@gap;
         }
+
         @media(max-width:@on-phone) {
             padding-left: 0;
             padding-right: 0;
         }
     }
+
     .post {
         position: relative;
         margin: 0 auto;
         padding: 2 * @gap 1.5*@gap;
-        background: white;
+        background-color: rgba(230, 230, 230, 0.3);
+        border: 5px solid #fff;
         &:extend(.z-depth-1);
+
         .meta {
             margin-bottom: 2*@gap;
+
             .title {
                 left: 0;
                 font-size: @article-title-size;
+
                 @media(max-width: @on-phone) {
                     font-size: @article-title-size-sm;
                 }
+
                 &:before {
                     content: none
                 }
+
                 a {
                     display: inline;
                     line-height: 1.25;
                     font-weight: normal;
                     color: lighten(@black, 2%);
+
                     &:hover {
                         color: @accent-color;
                     }
                 }
             }
+
             time,
             .cats {
                 display: inline-block;
                 font-size: .75rem;
             }
+
             .cats {
                 &:before {
                     display: inline-block;
@@ -107,29 +131,48 @@
                     border-bottom: @border-width/2 solid transparent;
                     border-left: @border-width solid @secondary-color;
                 }
+
                 a {
                     font-weight: bold;
                     color: @secondary-color;
                 }
             }
+
             time {
                 color: lighten(@grey-color, 20%);
             }
         }
-        .full-width,.highlight{
+
+        .full-width,
+        .highlight {
             margin-left: -1.5* @gap;
             margin-right: -1.5* @gap;
             padding-left: 1.5* @gap;
             padding-right: 1.5* @gap;
             width:~"calc(100% + 3 * @{gap})";
         }
+
         img {
             max-width: 100%;
         }
-        &:hover{
-            box-shadow: 0 2px 5px 0 rgba(0,0,0,0.26), 0 2px 10px 0 rgba(0,0,0,0.26);
+
+        &:hover {
+            box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26), 0 2px 10px 0 rgba(0, 0, 0, 0.26);
+        }
+
+        &:before {
+            content: ' ';
+            background-image: url(images/pin.png);
+            background-size: 32px 32px;
+            z-index: 100;
+            width: 32px;
+            height: 32px;
+            right: -10px;
+            top: -15px;
+            position: absolute;
         }
     }
+
     @media(max-width:@on-phone) {
         padding-right: 0;
         .mobile-post();
