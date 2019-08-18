@@ -18,10 +18,10 @@ search:
 
 # friends link
 links:
-  - name: bulrush for go web dev
-    url: https://github.com/bulrush
-  - name: juglans for nodejs web dev
-    url: https://github.com/juglans
+  - name: bulrush
+    url: https://github.com/2637309949/bulrush
+  - name: juglans
+    url: https://github.com/2637309949/juglans
 
 # navigation menu
 menu:
