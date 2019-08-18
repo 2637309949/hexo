@@ -67,3 +67,15 @@
   -webkit-animation-iteration-count: 1;
   animation-iteration-count: 1;
 }
+.wobble-top:hover,
+.wobble-top:focus,
+.wobble-top:active {
+  -webkit-animation-name: wobble-top;
+  animation-name: wobble-top;
+  -webkit-animation-duration: 0s;
+  animation-duration: 0s;
+  -webkit-animation-timing-function: ease-in-out;
+  animation-timing-function: ease-in-out;
+  -webkit-animation-iteration-count: 0;
+  animation-iteration-count: 0;
+}
