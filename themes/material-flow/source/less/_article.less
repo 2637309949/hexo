@@ -124,22 +124,20 @@
         background: lighten(@background-color, 5%);
     }
     .readmore {
-        // display: none; // howtodesign?
-        font-size: 1.2rem;
+        overflow: hidden;
         margin-top: @gap;
         a {
-            display: inline-block;
-            vertical-align: middle;
+            display: block;
             line-height: 2rem;
+            float: right;
         }
     }
     .tags {
         position: relative;
-        padding-top: @gap/2;
-        padding-bottom: @gap/2;
+        padding-top: @gap/4;
+        padding-bottom: @gap/4;
         font-size: 1rem;
         line-height: 1.5rem;
-        margin-top: @gap;
         background: @qoute-background-color;
         &.article-tags {
             background: transparent;
@@ -149,15 +147,12 @@
             position: relative;
             display: inline-block;
             word-spacing: 0;
-            // &+a{
-            //   margin-left: @gap/2;
-            // }
             .enable-trans(.1s);
-            //background:@material-light-grey;
             color: @grey-color;
             &:hover {
                 color: @accent-color;
                 background: transparent;
+                text-decoration:underline;
             }
             &::before {
                 content: "#";
