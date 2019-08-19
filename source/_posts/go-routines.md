@@ -1,5 +1,5 @@
 ---
-title: go-routines
+title: 深入GO协程设计
 date: 2019-08-17 14:26:03
 categories: 
 - Go
