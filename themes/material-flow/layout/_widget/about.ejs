@@ -5,7 +5,7 @@
         <div class='header'>Author <%=config.author %></div>
         <div class='content'>
                 <div class='desc'>
-                        <div class='desc-item'>Email: <%=config.email %></div>
+                        <div class='desc-item'>Email: <%- mail_to(config.email) %></div>
                         <div class='desc-item'>Loc: <%=config.loc %></div>
                         <div class='desc-item'>focus: <%=config.focus %></div>
                         <div class='desc-item'>link: <a href="<%=config.github %>">github</a></div>
