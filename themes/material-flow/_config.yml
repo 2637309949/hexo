@@ -50,3 +50,9 @@ less:
 social:
 - slug: github
   url: https://github.com/2637309949
+
+# comments module
+comments:
+  enabled: true
+  provider: livere
+  uid: MTAyMC80NjE2OC8yMjY3OQ==
