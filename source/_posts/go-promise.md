@@ -121,10 +121,57 @@ task3-1 21 22
 task 31 
 ```
 
-整个流程写起来有种回到C时代，其实我们在设计程序时基本把信道通信作为一个协程的返回结果的载体，在实际中我们并不关心这个交互的过程。
+整个流程写起来有种回到C时代，其实我们在设计程序时基本把信道通信作为一个协程的返回结果载体，在实际中我们并不关心这个交互的过程，如上面我们花了很多代码去控制整个设计的流程，如chan的读写，WaitGroup的等待结果。那么我们可以尝试把整个流程的控制包装一次，如上面的chan交互，WaitGroup子任务同步，我们可以屏蔽不管的，我们只关心开启一个协程最终返回一个结果以及一个可选的error。
+
+```go
+package main
+
+import "fmt"
+
+type mess struct {
+	emit chan interface{}
+	ret  interface{}
+	err  error
+}
+
+func (m *mess) get() (interface{}, error) {
+	defer func() {
+		close(m.emit)
+	}()
+	if m.err != nil {
+		return nil, m.err
+	}
+	return <-m.emit, nil
+}
+
+func asyncFunc(funk func() (interface{}, error)) *mess {
+	m := &mess{
+		emit: make(chan interface{}, 1),
+	}
+	go func() {
+		ret, err := funk()
+		if err != nil {
+			m.err = err
+		} else {
+			m.emit <- ret
+		}
+	}()
+	return m
+}
+
+func main() {
+	as := asyncFunc(func() (interface{}, error) {
+		return 100, nil
+	})
+	fmt.Println(as.get())
+}
+```
+在上面我们把整个异步的控制放在asyncFunc去完成了，屏蔽了其中交互。
 
 ### Promsie方式
 在上面的应用设计中我们很容易发现一个核心点，所有的任务最终是一个串联和并联的组合，在并联中我们使用异步，串联（也就是等待上一个任务的结果才开始）我们使用同步。我们换一种方式thenable开发
+下面我们使用
+[https://github.com/fanliao/go-promise](https://github.com/fanliao/go-promise)  
 
 ```go
 package main
