@@ -169,7 +169,6 @@ var customSearch;
 			});
 		scrollListener();
 	}
-
 	// function getPicture() {
 	// 	const $banner = $('.banner');
 	// 	if ($banner.length === 0) return;
@@ -209,7 +208,6 @@ var customSearch;
 		setTocToggle();
 		// getHitokoto();
 		// getPicture();
-
 
 		$(".article .video-container").fitVids();
 
