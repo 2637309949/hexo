@@ -43,7 +43,9 @@
 		<%} %>
 	</section>
 	<% if (theme.comments && theme.comments.enabled){ %>
-		<%- partial('comments') %>
+		<section id="comments">
+			<%- partial('comments') %>
+		</section>
 	<% } %>	
 </article>
 <script>
