@@ -1,14 +1,14 @@
 <section class='m_widget about'>
-    <% if(config.avatar) { %>
-    <img class='avatar waves-image' src='<%= url_for(config.avatar) %>' />
-    <%} %>
-    <div class='header'>Author <%=config.author %></div>
-    <div class='content'>
-            <div class='desc'>
-                    <div class='desc-item'>Email: <%=config.email %></div>
-                    <div class='desc-item'>Loc: <%=config.loc %></div>
-                    <div class='desc-item'>focus: <%=config.focus %></div>
-                    <div class='desc-item'>link: <a href="<%=config.github %>">github</a></div>
-            </div>
-    </div>
+        <% if(config.avatar) { %>
+        <img class='avatar waves-image' src='<%= url_for(config.avatar) %>' />
+        <%} %>
+        <div class='header'>Author <%=config.author %></div>
+        <div class='content'>
+                <div class='desc'>
+                        <div class='desc-item'>Email: <%=config.email %></div>
+                        <div class='desc-item'>Loc: <%=config.loc %></div>
+                        <div class='desc-item'>focus: <%=config.focus %></div>
+                        <div class='desc-item'>link: <a href="<%=config.github %>">github</a></div>
+                </div>
+        </div>
 </section>

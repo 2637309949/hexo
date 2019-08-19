@@ -1,19 +1,18 @@
 <%- partial('_partial/head') %>
+
 <body>
   <%- partial('_partial/loading') %>
-  <script>setLoadingBarProgress(20)</script> 
+  <script>setLoadingBarProgress(20)</script>
   <%- partial('_partial/header', null, {cache: !config.relative_link}) %>
-    <script>setLoadingBarProgress(40);</script>
+  <script>setLoadingBarProgress(40);</script>
   <div class="l_body">
     <div class='container clearfix'>
       <div class='l_main'>
         <%- body %>
       </div>
-      <% if (is_post() == false) { %>
-        <aside class='l_side'>
-          <%- partial('_partial/side') %>
-        </aside>
-      <% } %>
+      <aside class='l_side'>
+        <%- partial('_partial/side') %>
+      </aside>
       <script>setLoadingBarProgress(60);</script>
     </div>
   </div>
@@ -22,4 +21,5 @@
   <%- partial('_partial/scripts') %>
   <script>setLoadingBarProgress(100);</script>
 </body>
+
 </html>

@@ -1,3 +1,5 @@
-<% (theme.widgets||[]).forEach(function(name){ %>
-  <%- partial('../_widget/'+name) %>
-<% }) %>
+<% if (is_post() == false) { %>
+  <% (theme.widgets||[]).forEach(function(name){ %>
+    <%- partial('../_widget/'+name) %>
+  <% }) %>
+<% } %>
