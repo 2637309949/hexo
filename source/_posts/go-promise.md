@@ -221,8 +221,58 @@ func main() {
 在理想的设计中，我们不要让任务去`等`子任务完成，而是类似事件模型设计一样，让子任务来`通知`紧接着才开始自已的任务。而且需要非常明确那些任务是串关系，那些是并关系
 
 ### 任务拆分
+在应用设计中我们需要把一个大任务拆解成几个小任务，具体如何定义小，我们是从实际出发，尽可能提高各个小任务之间的高分离，这样就减少切换routines栈的代价
+```go
+func funk() {
+	// task1
+	go func(){
+		// task11
+		go func(){
+		}()
+		// task12
+		go func(){
+		}()
+	}()
+	// task2
+	go func(){
+		// task21
+		go func(){
+			// task211
+			go func(){
+			}()
+		}()
+	}()
+}
+```
 ### 任务组合
-
+经过任务拆分后的程序跑在不同的routine中，最后以某种组合形式达成最终效果，
+```go
+func funk() {
+	task1, task2 := make(chan int, 1), make(chan int, 1)
+	// task1
+	go func(){
+		// task11
+		go func(){
+		}()
+		// task12
+		go func(){
+		}()
+		task1 <- 1
+	}()
+	// task2
+	go func(){
+		// task21
+		go func(){
+			// task211
+			go func(){
+			}()
+		}()
+		task2 <- 1
+	}()
+	<- task1
+	<- task2
+}
+```
 
 ## 消息队列
 ![](/images/go-promise/queue.svg)
@@ -230,5 +280,114 @@ func main() {
 无论我们程序怎么高效率地处理各种任务，但是CPU以及物理机总有一个计算瓶颈的，不管是纵向增加物理机配置还是横向添加物理机数量。那么我们需要在物理机子可运算的范围之外添加消息队列。让服务计算从被动转主动的形式从而发挥最大的效率。
 
 ### 设计思路
+![](/images/go-promise/event.png
+)
+如上图，我们在main函数中开启了多个任务，比如消化前端的某个表单提交，那么这个表单属于某个策略，这个策略是一个定时的事件循环，后台处理表单请求后立即把它转换成消息并加入该策略的消息队列中，在策略中我们配置可以同时运行几个任务（根据具体的情况设置）
 
 ### 最小化实现
+上面分析了如何设计一个最小的mq实现，我们下面通过go的方式实现整个逻辑，该演示代码来自我的bulrush子模块，完整的代码可以前往我的github
+
+#### 定时函数
+定时函数用来，以一定的时间间隔去扫描存在的消息队列并取其中一个消化。
+```go
+func setInterval(what func(), delay time.Duration) chan bool {
+	ticker := time.NewTicker(delay)
+	quit := make(chan bool)
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				go what()
+			case <-quit:
+				ticker.Stop()
+				return
+			}
+		}
+	}()
+	return quit
+}
+```
+
+#### 执行函数
+在执行函数中，我们开启不同的策略函数去处理各自的队列
+```go
+func (mq *MQ) startTactic() *MQ {
+	funk.ForEach(mq.TypeTactic, func(tac TypeTactic) {
+		timer := setInterval(func() {
+			ctCount := tac.Tactic.CTCount
+			ttype := tac.Type
+			var exector []Exector
+			if ttype == "" {
+				exector = funk.Filter(mq.Exector, func(exe Exector) bool {
+					return funk.Find(mq.TypeTactic, func(ttc TypeTactic) bool {
+						return ttc.Type == exe.Type
+					}) == nil
+				}).([]Exector)
+			} else {
+				exector = funk.Filter(mq.Exector, func(exe Exector) bool {
+					return exe.Type == ttype
+				}).([]Exector)
+			}
+			funk.ForEach(exector, func(exec Exector) {
+				handler := exec.Handler
+				handlerType := exec.Type
+				pTaskCount := mq.Model.Count(handlerType, PROCESSING)
+				iTask := mq.Model.Find(handlerType, INIT)
+				sort.Sort(sortByMsAt(iTask))
+				if len(iTask) >= 1 {
+					task := iTask[0]
+					if pTaskCount < ctCount {
+						err := mq.Model.Update(task, PROCESSING)
+						if err != nil {
+							mq.Model.Update(task, FAILED)
+						} else {
+							err := handler(task)
+							if err != nil {
+								mq.Model.Update(task, FAILED)
+							} else {
+								mq.Model.Update(task, SUCCEED)
+							}
+						}
+					}
+				}
+			})
+		}, time.Duration(tac.Tactic.Interval)*time.Second)
+		mq.Interval = append(mq.Interval, timer)
+	})
+	return mq
+}
+```
+
+#### 策略函数
+我们可以手动添加不同的策略函数，策略规则。
+```go
+// AddTactics add Tactics to system
+func (mq *MQ) AddTactics(tp string, tac Tactic) *MQ {
+	typeTac := funk.Find(mq.TypeTactic, func(tc TypeTactic) bool {
+		return tc.Type == tp
+	})
+	if typeTac != nil {
+		rushLogger.Info("rewrite Tactic strategy %v", typeTac)
+		typeOne := typeTac.(TypeTactic)
+		typeOne.Tactic = tac
+	} else {
+		mq.TypeTactic = append(mq.TypeTactic, TypeTactic{
+			Type:   tp,
+			Tactic: tac,
+		})
+	}
+	go mq.loop()
+	return mq
+}
+```
+
+#### 消息推送
+后台将请求计算转成消息的形式推送给时间循环。
+```go
+// Push events
+func (mq *MQ) Push(mess Message) {
+	mess.CreatedAt = time.Now()
+	mess.Status = INIT
+	mq.Model.Save(mess)
+}
+```

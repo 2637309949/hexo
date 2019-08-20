@@ -108,7 +108,7 @@ cus, ok := errors.Cause(err).(*Error);
 cus.Code
 ```
 ### 工具函数
-自定义错误有一个功能点是常用的，我们直接将他们包装成工具类。这样我们可以统一并省去重复代码。
+自定义错误有一个功能点是常用的，我们直接将他们包装成工具类。这样我们可以统一处理并省去重复代码。
 
 #### 包装错误信息
 ```go
@@ -146,6 +146,19 @@ func ErrCode(err error) (code uint64) {
 	return
 }
 ```
+
+## 错误转换
+不管是那个实现了error接口的错误，在传递错误时都是以error对象传递（不要以自定义错误对象直接传递），在错误需要被处理消化时，我们可以通过类型断言的形式把原始对象解包出来
+```go
+if err = func1(1); err != nil {
+	if originalErr, ok := errors.Cause(err).(*Error); ok {
+		fmt.Println("the original error coed was : ", originalErr.Code)
+	} else {
+		log.Printf("%v", err)
+	}
+}
+```
+
 ## Example
 我们来看一个完整的应用实例，下面我们模拟了两个错误，业务层面的和系统层面的，我们通过自定义错误以及异常恢复的形式优雅的处理这两个错误。
 ```go

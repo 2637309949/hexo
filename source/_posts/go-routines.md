@@ -97,7 +97,7 @@ Go 编译器不使用保护页，而是在每个函数调用中插入一个检�
 
 但是对于网络套接字，按照设计，任何时候几乎所有的 goroutine 都将被阻塞，等待网络 IO。在一个简单的实现中，这将需要和 goroutine 一样多的线程，所有线程都被阻塞，等待网络流量。由于 runtime 和 net 包之间的协作，集成到 Go 的 runtime 中的 network poller 可以有效地处理这个问题。
 
-在较早版本的 Go 中，network poller 是一个 goroutine，负责使用 kqueue 或 epoll 轮询准备就绪通知。轮询 goroutine 将通过 channel 与等待的 goroutine 通信。这实现了避免每个线程都做操作系统调用产生的瓶颈，而使用了通过 channel 发送消息这种通用唤醒机制。这意味着调度器不需要关心唤醒源，不需要把唤醒操作看的比较重要。
+在较早版本的 Go 中，network poller 是一个 goroutine，`负责使用 kqueue 或 epoll 轮询准备就绪通知`。轮询 goroutine 将通过 channel 与等待的 goroutine 通信。这实现了避免每个线程都做操作系统调用产生的瓶颈，而使用了通过 channel 发送消息这种通用唤醒机制。这意味着调度器不需要关心唤醒源，不需要把唤醒操作看的比较重要。
 
 在 Go 的当前版本中，network poller 已经集成到 runtime 本身中。当 runtime 知道哪个 goroutine 正在等待网络套接字就绪时，它可以在数据包到达时立即将 goroutine 放回相同的 CPU 上，从而减少延迟并增加吞吐量。
 
