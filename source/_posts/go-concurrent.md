@@ -4,7 +4,8 @@ date: 2019-08-18 21:04:08
 categories: 
 - Go
 tags:
-    - promise
+	- promise
+	- concurrent
 ---
 各种语言基本都会有一个提高程序并发处理的解决方式，这里我们以实际为背景，展开GO routines和 Go queue的设计，其中，GO语言中是通过信道通信的方式来完成协程之间协作，那么在实际应用中我们如何优雅而高效地设计协程程序呢，接下我们通过实际应用中的毛刺来剖析routines及实践最佳方案。
 <!-- more -->
