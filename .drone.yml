@@ -15,12 +15,12 @@ steps:
 - name: master-docker  
   image: plugins/docker
   settings:
-    registry: 172.20.10.3:8082
+    registry: http://172.20.10.3:8082
     mirror: http://hub-mirror.c.163.com
     username: simple
     password: admin123
     dockerfile: ./Dockerfile
-    repo: 172.20.10.3:8082/${DRONE_REPO_NAME}
+    repo: http://172.20.10.3:8082/${DRONE_REPO_NAME}
     tags: ${DRONE_COMMIT_BRANCH}-${DRONE_BUILD_NUMBER}
   when:
     branch:
