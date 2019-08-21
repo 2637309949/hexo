@@ -179,3 +179,22 @@ CMD [ "nginx", "-g", "daemon off;" ]
 ```
 
 最后推送
+```sh
+git push simple master
+```
+
+登录drone和nexus3查看效果
+
+![](/images/gogs-drone-nexus3/drone-ok.png)
+
+![](/images/gogs-drone-nexus3/nexus3-ok.png)
+
+## 部署项目
+![](/images/gogs-drone-nexus3/k8s-cd.jpg)
+
+通常我们线上都是使用成熟的容器集群框架，比如最流行的k8s, docker官方推出的swarm，这里由于是本地机子，我们这里直接ssh的方式去部署
+
+继续在.drone.yml添加插件
+
+
+
