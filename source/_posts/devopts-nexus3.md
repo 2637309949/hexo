@@ -92,6 +92,7 @@ Login Succeeded
   ]
 }
 ```
+修改后记得要重启docker
 
 ## 推送镜像
 ### docker推送镜像到仓库

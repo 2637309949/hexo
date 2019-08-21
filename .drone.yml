@@ -5,8 +5,8 @@ steps:
 - name: master-build  
   image: node:carbon-alpine
   commands:
-    - yarn
-    - yarn run build
+    - npm install
+    - npm run build
   when:
     branch:
       - master

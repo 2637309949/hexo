@@ -79,6 +79,14 @@ docker run \
 
 点击右上角的sync即可同步最新仓库，我们看到我们的inspiration已经过来了
 
+由于我们使用的是IP，所以drone仓库激活后在gogos创建的webhook有问题，所以我们需要在gogs修改一下
+![](/images/gogs-drone-nexus3/hook.png)
+
+修改后点击测试推送
+![](/images/gogs-drone-nexus3/test-hook.png)
+
+查看drone，看到已经在构建了，我们接下来修改.drone.yml
+![](/images/gogs-drone-nexus3/test-drone.png)
 
 ## 部署nexus3
 参考我们另一篇 `Nexus3搭建私有仓库`
@@ -87,5 +95,18 @@ docker run \
 
 在inspiration根目录下创建.drome.yaml
 
+一开始我们先安装drone cli方便测试yml
+```sh
+curl -L https://github.com/drone/drone-cli/releases/download/v1.1.0/drone_linux_amd64.tar.gz | tar zx
+sudo install -t /usr/local/bin drone
+```
+
+打开drone个人设置获取认证票据
+
+```sh
+export DRONE_SERVER=http://127.0.0.1:2080
+export DRONE_TOKEN=uF4qbQSjnlR2yiLNkhfOYFv9GlqhoMaf
+drone info
+```
 
 
