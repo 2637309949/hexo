@@ -16,6 +16,7 @@ steps:
   image: plugins/docker
   settings:
     registry: 172.20.10.3:8082
+    mirror: https://registry.docker-cn.com
     username: simple
     password: admin123
     dockerfile: ./Dockerfile
