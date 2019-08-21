@@ -93,8 +93,6 @@ docker run \
 
 ## 编写CI/DI脚本
 
-在inspiration根目录下创建.drome.yaml
-
 一开始我们先安装drone cli方便测试yml
 ```sh
 curl -L https://github.com/drone/drone-cli/releases/download/v1.1.0/drone_linux_amd64.tar.gz | tar zx
@@ -109,4 +107,75 @@ export DRONE_TOKEN=uF4qbQSjnlR2yiLNkhfOYFv9GlqhoMaf
 drone info
 ```
 
+查看当前building队列
+```sh
+double@double:~/Work/repo/inspiration$ drone queue ls
+item #15 
+Status: running
+Machine: ef7fdb4e7d05
+OS: linux
+Arch: amd64
+Variant: 
+Version: 
+```
 
+
+在inspiration根目录下创建.drome.yaml
+
+
+```yml
+kind: pipeline
+name: default
+
+steps:
+- name: master-build  
+  image: node:carbon-alpine
+  commands:
+    - npm install
+    - npm run build
+  when:
+    branch:
+      - master
+    event: [push]
+
+- name: master-docker  
+  image: plugins/docker
+  settings:
+    registry: 172.20.10.3:8082
+    mirror: https://registry.docker-cn.com
+    username: simple
+    password: admin123
+    dockerfile: ./Dockerfile
+    repo: 172.20.10.3:8082/${DRONE_REPO_NAME}
+    tags: ${DRONE_COMMIT_BRANCH}-${DRONE_BUILD_NUMBER}
+    insecure: true
+  when:
+    branch:
+      - master
+    event: [push]
+```
+
+有一个地方需要非常注意，由于我们的仓库是insecure http形式的，所以要加上insecure: true，否则控制台不输出东西就终止了（自已debug半天才发现。。）
+
+在inspiration根目录下创建Dockerfile
+
+```yml
+FROM nginx:stable-alpine
+
+RUN echo "http://mirrors.aliyun.com/alpine/v3.6/main/" > /etc/apk/repositories
+RUN apk update && apk add tzdata \
+    && rm -f /etc/localtime \
+    && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+
+WORKDIR /usr/share/nginx/html
+RUN mkdir -p /usr/share/nginx/html/inspiration
+RUN mkdir -p /etc/nginx/conf.d/
+
+COPY nginx.conf /etc/nginx/conf.d/nginx.conf
+COPY public /usr/share/nginx/html/inspiration
+
+EXPOSE 8087
+CMD [ "nginx", "-g", "daemon off;" ]
+```
+
+z最后
