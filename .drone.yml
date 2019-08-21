@@ -31,13 +31,12 @@ steps:
     event: [push]
 
 - name: master-deploy  
-  image: appleboy/drone-scp
-  settings:
+  image: appleboy/drone-ssh
     host:
       - 172.20.10.3
     username: double
     password:
-      from_secret: 111111
+      from_secret: ssh_secret
     port: 22
     command_timeout: 2m
     script:
