@@ -14,7 +14,14 @@ tags:
 Gogs 是一款类似GitHub的开源文件/代码管理系统（基于Git），Gogs 的目标是打造一个最简单、最快速和最轻松的方式搭建自助 Git 服务。使用 Go 语言开发使得 Gogs 能够通过独立的二进制分发，并且支持 Go 语言支持的 所有平台，包括 Linux、Mac OS X、Windows 以及 ARM 平台。
 
 ```sh
-docker run -d --name=gogs -p 10022:22 -p 10080:3000 -v /var/gogs:/data gogs/gogs
+docker run \
+    --name=gogs \
+    -p 1022:22 \
+    -p 1080:3000 \
+    --restart=always \
+    -v /home/double/docker/data/gogs:/data \
+    -d \
+    gogs/gogs
 ```
 
 初次进去时需要配置一些东西，按实际情况填写即可，进去后注册一个账号，这里我们注册了一个simple账号
@@ -29,17 +36,17 @@ git clone https://github.com/2637309949/inspiration.git
 创建新分支，并推送到我们的gogs来
 ```sh
 double@double:~/Work/repo/inspiration$ git remote remove simple
-double@double:~/Work/repo/inspiration$ git remote add simple http://localhost:10080/simple/inspiration.git
+double@double:~/Work/repo/inspiration$ git remote add simple http://172.20.10.3:1080/simple/inspiration.git
 double@double:~/Work/repo/inspiration$ git push simple master
-对象计数中: 537, 完成.
+对象计数中: 550, 完成.
 Delta compression using up to 8 threads.
-压缩对象中: 100% (483/483), 完成.
-Username for 'http://localhost:10080': simple
-Password for 'http://simple@localhost:10080': 
-写入对象中: 100% (537/537), 2.13 MiB | 227.00 KiB/s, 完成.
-Total 537 (delta 183), reused 0 (delta 0)
-remote: Resolving deltas: 100% (183/183), done.
-To http://localhost:10080/simple/inspiration.git
+压缩对象中: 100% (496/496), 完成.
+Username for 'http://172.20.10.3:1080': simple
+Password for 'http://simple@172.20.10.3:1080': 
+写入对象中: 100% (550/550), 2.26 MiB | 351.00 KiB/s, 完成.
+Total 550 (delta 187), reused 0 (delta 0)
+remote: Resolving deltas: 100% (187/187), done.
+To http://172.20.10.3:1080/simple/inspiration.git
  * [new branch]      master -> master
 ```
 ![](/images/gogs-drone-nexus3/gogs.png)
@@ -54,7 +61,7 @@ docker run \
   --volume=/var/run/docker.sock:/var/run/docker.sock \
   --volume=/home/double/docker/data/drone:/data \
   --env=DRONE_GIT_ALWAYS_AUTH=false \
-  --env=DRONE_GOGS_SERVER=http://172.20.10.3:10080 \
+  --env=DRONE_GOGS_SERVER=http://172.20.10.3:1080 \
   --env=DRONE_RUNNER_CAPACITY=2 \
   --env=DRONE_SERVER_HOST=127.0.0.1 \
   --env=DRONE_SERVER_PROTO=https \
