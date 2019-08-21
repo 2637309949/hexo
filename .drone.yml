@@ -29,3 +29,17 @@ steps:
     branch:
       - master
     event: [push]
+
+- name: master-deploy  
+    image: appleboy/drone-scp
+    settings:
+      host:
+        - 172.20.10.3
+      username: double
+      password:
+        from_secret: 111111
+      port: 22
+      command_timeout: 2m
+      script:
+        - docker pull 172.20.10.3:8082/${DRONE_REPO_NAME}:${DRONE_COMMIT_BRANCH}-${DRONE_BUILD_NUMBER}
+        - docker run --rm -d -p 80:80/tcp 172.20.10.3:8082/${DRONE_REPO_NAME}:${DRONE_COMMIT_BRANCH}-${DRONE_BUILD_NUMBER}

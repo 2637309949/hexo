@@ -7,7 +7,7 @@ tags:
 	- docker
 	- ci/di
 ---
-在我们实际开发中持续化集成和持续化部署是最常见的，我们每天都会持续化集成n次，部署测试n次，所以搭建一个ci/di流程是非常关键的，这里以Gogs-Drone-Nexus3为例子展开ci/di
+在我们实际开发中持续化集成和持续化部署是最常见的，我们每天都会持续化集成n次，部署测试n次，所以搭建一个ci/di流程是非常关键的，这里以Gogs-Drone-Nexus3为例子展开ci/di，从零打造一个单机版本的发布流程。
 <!-- more -->
 
 ## 部署gogs
@@ -168,14 +168,16 @@ RUN apk update && apk add tzdata \
     && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 WORKDIR /usr/share/nginx/html
-RUN mkdir -p /usr/share/nginx/html/inspiration
 RUN mkdir -p /etc/nginx/conf.d/
+RUN mkdir -p /usr/share/nginx/html/inspiration
 
 COPY nginx.conf /etc/nginx/conf.d/nginx.conf
+COPY public /usr/share/nginx/html
 COPY public /usr/share/nginx/html/inspiration
 
-EXPOSE 8087
+EXPOSE 80
 CMD [ "nginx", "-g", "daemon off;" ]
+
 ```
 
 最后推送
@@ -193,6 +195,27 @@ git push simple master
 ![](/images/gogs-drone-nexus3/k8s-cd.jpg)
 
 通常我们线上都是使用成熟的容器集群框架，比如最流行的k8s, docker官方推出的swarm，这里由于是本地机子，我们这里直接ssh的方式去部署
+
+![](/images/gogs-drone-nexus3/all.png)
+
+在部署的机器上部署ssh-server(其实考虑安全问题的话，我们可以对ip进行限制或者使用反向代理的形式登录服务器)
+
+安装ssh-server
+```sh
+sudo apt-get install openssh-server
+```
+查看是否启动
+```sh
+double@double:~$ ps -aux | grep sshd
+root      2331  0.0  0.0  72236  4556 ?        Ss   15:09   0:00 /usr/sbin/sshd -D
+double    2516  0.0  0.0  14664  1060 pts/10   S+   16:49   0:00 grep sshd
+root     14996  0.0  0.0   4308   408 ?        Ss   15:31   0:00 /usr/sbin/sshd -D -f /app/gogs/docker/sshd_config
+```
+未启动则
+```sh
+sudo service sshd start
+```
+
 
 继续在.drone.yml添加插件
 
