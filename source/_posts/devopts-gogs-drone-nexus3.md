@@ -219,5 +219,21 @@ sudo service sshd start
 
 继续在.drone.yml添加插件
 
+```yml
+- name: master-deploy  
+  image: appleboy/drone-ssh
+  settings:
+    host:
+      - 172.20.10.3
+    username: double
+    password:
+      from_secret: ssh_secret
+    port: 22
+    command_timeout: 2m
+    script:
+      - docker pull 172.20.10.3:8082/${DRONE_REPO_NAME}:${DRONE_COMMIT_BRANCH}-${DRONE_BUILD_NUMBER}
+      - docker run --rm -d -p 80:80/tcp 172.20.10.3:8082/${DRONE_REPO_NAME}:${DRONE_COMMIT_BRANCH}-${DRONE_BUILD_NUMBER}
+```
 
+记得在drone对应的repo上添加你的secret密码
 
