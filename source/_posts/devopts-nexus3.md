@@ -12,11 +12,9 @@ tags:
 
 ## 启动 Nexus 容器
 ```sh
-$ docker run -d --name nexus3 --restart=always \
-    -p 8081:8081 \
-	-p 8082:8082 \
-    --mount src=nexus-data,target=/nexus-data \
-    sonatype/nexus3
+$ docker run \
+  -d --name nexus3 --restart=always -p 8081:8081 \
+  -p 8082:8082 --mount src=nexus-data,target=/nexus-data sonatype/nexus3
 ```
 注意：nexus内开放的端口要记得在run nexus时声明，如上面的8082是我们下面开启服务的端口，我们这里把它映射出来。
 
@@ -124,3 +122,47 @@ a0fe554d0346: Pushed
 ```
 ### 登录nexus查看
 ![](/images/nexus3/push.png)
+
+## 使用私有仓库
+
+删除刚才的镜像
+```sh
+double@double:~$ docker images
+REPOSITORY                               TAG                 IMAGE ID            CREATED             SIZE
+sonatype/nexus3                          latest              35ca857d5b19        11 days ago         599MB
+phpmyadmin/phpmyadmin                    latest              626319eaebed        2 months ago        421MB
+redis                                    latest              a55fbf438dfd        4 months ago        95MB
+127.0.0.1:8081/repository/simple/mongo   3.4.20-jessie       0b7f4e6af48a        4 months ago        390MB
+127.0.0.1:8082/mongo                     3.4.20-jessie       0b7f4e6af48a        4 months ago        390MB
+mongo                                    3.4.20-jessie       0b7f4e6af48a        4 months ago        390MB
+```
+
+```sh
+docker rmi -f 0b7f4e6af48a
+```
+
+查看私有仓库
+```sh
+curl 127.0.0.1:8082/v2/_catalog
+```
+
+拉取私有仓库镜像
+
+```sh
+{"repositories":["mongo"]}double@double:~$ docker pull 127.0.0.1:8082/mongo:3.4.20-jessie
+3.4.20-jessie: Pulling from mongo
+2a639da97f77: Already exists 
+073b4f52defe: Already exists 
+bce37d0f5c17: Already exists 
+379dc19f9963: Already exists 
+e44806c61e63: Already exists 
+b76faf91d209: Already exists 
+dd1d9be5b26b: Already exists 
+9420e1982a2f: Already exists 
+9ad2432e6a03: Already exists 
+741494f9ac47: Already exists 
+a03462db0fd4: Already exists 
+Digest: sha256:e8be4bb2b900165e188b07808178462ed1ce5b7f87578d71f4119a9316d6b151
+Status: Downloaded newer image for 127.0.0.1:8082/mongo:3.4.20-jessie
+```
+
