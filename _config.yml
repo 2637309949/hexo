@@ -62,8 +62,6 @@ index_generator:
 
 # Generate gallery for Hexo
 lightgallery:
-  js: https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js
-  css: https://cdn.jsdelivr.net/lightgallery.js/1.0.1/css/lightgallery.min.css
   # if you don't specify the css or js source, the default cdn will be used.
   # css: # css source url
   # js: #js source url
@@ -75,7 +73,6 @@ lightgallery:
       # lg-autoplay:
       # lg-fullscreen:
       # lg-pager:
-
 
 # Category & Tag
 default_category: uncategorized
