@@ -43,5 +43,5 @@ steps:
     stack: inspiration
     file: docker-stack.yml
     environment:
-      DRONE_COMMIT_BRANCH: ${DRONE_COMMIT_BRANCH}
-      DRONE_BUILD_NUMBER: ${DRONE_BUILD_NUMBER}
+      - DRONE_COMMIT_BRANCH=${DRONE_COMMIT_BRANCH}
+      - DRONE_BUILD_NUMBER=${DRONE_BUILD_NUMBER}
