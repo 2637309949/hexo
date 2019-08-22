@@ -34,6 +34,8 @@ steps:
   image: drone-portainer
   settings:
     url: http://127.0.0.1:9000
+    endpoint: local
+    stackfile: docker-stack.yml
     stack: appinspiration
     username:
       from_secret: portainer_username

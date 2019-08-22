@@ -62,6 +62,17 @@ services:
 接下来我们就在drone构建阶段中去把我们的项目部署到这个stack中来（stack不存在时会新建或存在时重新部署）
 ## 编写CI/DI脚本
 
+### 创建drone-portainer镜像
+```sh
+git clone https://git.salcedo.tech/salcedo/drone-portainer.git
+```
+
+```sh
+docker build -t drone-portainer .
+```
+
+### 编写构建流程
+
 ```yml
 kind: pipeline
 name: default
