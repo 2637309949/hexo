@@ -128,6 +128,7 @@ To http://172.20.10.3:1080/simple/inspiration.git
 
 ```sh
 docker run \
+  --restart=always \
   --volume=/var/run/docker.sock:/var/run/docker.sock \
   --volume=/home/double/docker/data/drone:/data \
   --env=DRONE_GIT_ALWAYS_AUTH=false \

@@ -13,8 +13,11 @@ tags:
 ## 启动 Nexus 容器
 ```sh
 $ docker run \
-  -d --name nexus3 --restart=always -p 8081:8081 \
-  -p 8082:8082 --mount src=nexus-data,target=/nexus-data sonatype/nexus3
+  -d --name nexus3 \
+  --restart=always \
+  -p 8081:8081 \
+  -p 8082:8082 \
+  --mount src=nexus-data,target=/nexus-data sonatype/nexus3
 ```
 注意：nexus内开放的端口要记得在run nexus时声明，如上面的8082是我们下面开启服务的端口，我们这里把它映射出来。
 
