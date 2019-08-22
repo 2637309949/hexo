@@ -3,7 +3,7 @@ services:
   web:
     image: 172.20.10.3:8082/inspiration:${DRONE_COMMIT_BRANCH}-${DRONE_BUILD_NUMBER}
     ports:
-      - 3000
+      - 80
   lb:
     image: dockercloud/haproxy
     ports:
