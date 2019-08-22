@@ -1,5 +1,5 @@
 ---
-title: Gogs-drone-nexus3-portainer自動部署流程
+title: Gogs-drone-nexus3自動部署流程2
 date: 2019-08-22 22:45:06
 categories: 
 - DevOpts
@@ -11,11 +11,11 @@ tags:
 <!-- more -->
 
 ## 部署gogs
-`参考Gogs-Drone-Nexus3自動部署流程`
+`参考Gogs-Drone-Nexus3自動部署流程1`
 ## 部署drone
-`参考Gogs-Drone-Nexus3自動部署流程`
+`参考Gogs-Drone-Nexus3自動部署流程1`
 ## 部署nexus3
-`参考Gogs-Drone-Nexus3自動部署流程`
+`参考Gogs-Drone-Nexus3自動部署流程1`
 ## 部署portainer
 ```sh
 docker run -d \
@@ -62,4 +62,63 @@ services:
 接下来我们就在drone构建阶段中去把我们的项目部署到这个stack中来（stack不存在时会新建或存在时重新部署）
 ## 编写CI/DI脚本
 
+```yml
+kind: pipeline
+name: default
+
+steps:
+- name: master-build  
+  image: node:carbon-alpine
+  commands:
+    - npm config set registry http://registry.npm.taobao.org/
+    - npm install
+    - npm run build
+    - npm config set registry https://registry.npmjs.org/
+  when:
+    branch:
+      - master
+    event: [push]
+
+- name: master-docker  
+  image: plugins/docker
+  settings:
+    registry: 172.20.10.3:8082
+    mirror: http://hub-mirror.c.163.com
+    username: simple
+    password: admin123
+    dockerfile: ./Dockerfile
+    repo: 172.20.10.3:8082/${DRONE_REPO_NAME}
+    tags: ${DRONE_COMMIT_BRANCH}-${DRONE_BUILD_NUMBER}
+    insecure: true
+  when:
+    branch:
+      - master
+    event: [push]
+
+- name: master-deploy
+  image: drone-portainer
+  settings:
+    url: http://127.0.0.1:9000
+    stack: appinspiration
+    username:
+      from_secret: portainer_username
+    password:
+      from_secret: portainer_password
+    environment:
+      DRONE_COMMIT_BRANCH: ${DRONE_COMMIT_BRANCH}
+      DRONE_BUILD_NUMBER: ${DRONE_BUILD_NUMBER}
+```
+ 
+根目录下添加docker-stack.yml
+```yml
+version: '2'
+services:
+  web:
+    image: 172.20.10.3:8082/inspiration:${DRONE_COMMIT_BRANCH}-${DRONE_BUILD_NUMBER}
+    ports:
+      - 80
+```
+
+在drone中添加账号密码
+![](/images/devopts-gogs-drone-nexus3-portainer/drone-pwd.png)
 

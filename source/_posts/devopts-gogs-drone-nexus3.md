@@ -1,5 +1,5 @@
 ---
-title: Gogs-Drone-Nexus3自動部署流程
+title: Gogs-Drone-Nexus3自動部署流程1
 date: 2019-08-21 10:29:24
 categories: 
 - DevOpts
