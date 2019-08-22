@@ -33,7 +33,7 @@ steps:
 - name: master-deploy
   image: maniack/drone-portainer
   settings:
-    portainer: http://127.0.0.1:9000
+    portainer: http://172.20.10.3:9000
     insecure: true
     username:
       from_secret: portainer_username
