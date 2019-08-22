@@ -31,16 +31,17 @@ steps:
     event: [push]
 
 - name: master-deploy
-  image: drone-portainer:latest
+  image: maniack/drone-portainer
   settings:
-    url: http://127.0.0.1:9000
-    endpoint: local
-    stackfile: docker-stack.yml
-    stack: appinspiration
+    portainer: http://127.0.0.1:9000
+    insecure: true
     username:
       from_secret: portainer_username
     password:
       from_secret: portainer_password
+    endpoint: local
+    stack: appinspiration
+    file: docker-stack.yml
     environment:
       DRONE_COMMIT_BRANCH: ${DRONE_COMMIT_BRANCH}
       DRONE_BUILD_NUMBER: ${DRONE_BUILD_NUMBER}

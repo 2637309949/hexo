@@ -62,17 +62,6 @@ services:
 接下来我们就在drone构建阶段中去把我们的项目部署到这个stack中来（stack不存在时会新建或存在时重新部署）
 ## 编写CI/DI脚本
 
-### 创建drone-portainer镜像
-```sh
-git clone https://git.salcedo.tech/salcedo/drone-portainer.git
-```
-
-```sh
-docker build -t drone-portainer .
-```
-
-### 编写构建流程
-
 ```yml
 kind: pipeline
 name: default
@@ -107,14 +96,17 @@ steps:
     event: [push]
 
 - name: master-deploy
-  image: drone-portainer
+  image: maniack/drone-portainer
   settings:
-    url: http://127.0.0.1:9000
-    stack: appinspiration
+    portainer: http://127.0.0.1:9000
+    insecure: true
     username:
       from_secret: portainer_username
     password:
       from_secret: portainer_password
+    endpoint: local
+    stack: appinspiration
+    file: docker-stack.yml
     environment:
       DRONE_COMMIT_BRANCH: ${DRONE_COMMIT_BRANCH}
       DRONE_BUILD_NUMBER: ${DRONE_BUILD_NUMBER}
