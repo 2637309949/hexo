@@ -40,7 +40,7 @@ steps:
     password:
       from_secret: portainer_password
     endpoint: local
-    stack: appinspiration
+    stack: inspiration
     file: docker-stack.yml
     environment:
       DRONE_COMMIT_BRANCH: ${DRONE_COMMIT_BRANCH}
