@@ -3,4 +3,12 @@ services:
   web:
     image: 172.20.10.3:8082/inspiration:${DRONE_COMMIT_BRANCH}-${DRONE_BUILD_NUMBER}
     ports:
-      - 80
+      - 3000
+  lb:
+    image: dockercloud/haproxy
+    ports:
+      - 80:80
+    links:
+      - web
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
