@@ -125,3 +125,10 @@ services:
 在drone中添加账号密码
 ![](/images/devopts-gogs-drone-nexus3-portainer/drone-pwd.png)
 
+推上gogos触发构建后查看效果
+![](/images/devopts-gogs-drone-nexus3-portainer/drone-detail.png)
+
+在potainter查看效果
+![](/images/devopts-gogs-drone-nexus3-portainer/app-update.png)
+
+至此整个单机版的自动化部署方案完成啦。
