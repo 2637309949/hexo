@@ -31,7 +31,7 @@ steps:
     event: [push]
 
 - name: master-deploy
-  image: drone-portainer
+  image: drone-portainer:latest
   settings:
     url: http://127.0.0.1:9000
     endpoint: local
