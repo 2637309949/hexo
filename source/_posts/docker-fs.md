@@ -31,6 +31,9 @@ docker run -d \
 - /home/double/docker/data/srv/plugin-data 插件数据存储
 - /home/double/docker/data/srv/volume      应用数据存储（我们在储存卷里配置）
 
+安装后我们在portainer可以看到我们的存储driver插件。
+![](/images/docker-fs/local-persist.png)
+
 ### 创建应用Volumes
 ```sh
 docker volume create -d local-persist -o mountpoint=/home/double/docker/data/srv/volume/appname --name=appname-volume
