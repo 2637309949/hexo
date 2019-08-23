@@ -2,7 +2,7 @@
 title: RPC的使用
 date: 2019-08-21 21:49:39
 categories: 
-- rpc
+- Rpc
 tags:
     - grpc
 ---
