@@ -374,6 +374,14 @@ X-Real-Ip: 10.255.0.2
 docker service logs traefik -f
 ```
 
+收工，最后关闭我们的机器
+```sh
+double@double:~$ docker-machine stop manager worker1 worker2
+Stopping "worker2"...
+Stopping "manager"...
+Stopping "worker1"...
+```
+
 参考链接
 [https://docs.docker.com/engine/swarm/swarm-tutorial/drain-node/](https://docs.docker.com/engine/swarm/swarm-tutorial/drain-node/)
 [https://docs.traefik.io/user-guide/swarm-mode/](https://docs.traefik.io/user-guide/swarm-mode/)
