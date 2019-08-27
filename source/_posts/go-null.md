@@ -4,7 +4,7 @@ date: 2019-08-22 09:56:12
 categories: 
 - Go
 tags:
-    - null
+    - zero
 ---
 每种语言都存在变量声明与初始化的过程，而GO也不例外，那么我们如何妥善的处理Zero问题，如结构体属性初始值问题，SQL null问题，JSON null问题（序列化问题）。
 
