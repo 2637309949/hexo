@@ -274,3 +274,91 @@ double
 18
 {double 18}
 ```
+
+### 地址段连续访问
+只要我们知道类型结构的（可以知道size），以及首地址，那么对于某个连续分配的地址的内容我们是可以持续访问的
+
+- 1 上一个地址+上一个大小 计算偏移量
+```go
+package main
+
+import (
+	"fmt"
+	"unsafe"
+
+	"github.com/2637309949/demo/p"
+)
+
+func main() {
+	n := p.Profile{Name: "double"}
+	nPointer := unsafe.Pointer(&n)
+	name := (*string)(unsafe.Pointer(nPointer))
+	age := (*int64)(unsafe.Pointer(uintptr(unsafe.Pointer(name)) + unsafe.Sizeof(*name)))
+	address := (*string)(unsafe.Pointer(uintptr(unsafe.Pointer(age)) + unsafe.Sizeof(*age)))
+
+	*age = 18
+	*address = "GZ"
+
+	fmt.Println(*name)
+	fmt.Println(*age)
+	fmt.Println(n)
+}
+```
+```sh
+[Running] go run "/home/double/Work/GO/demo/main.go"
+double
+18
+{double 18 GZ}
+```
+
+
+- 2 首地址+分段size 计算偏移量
+
+上面我们借助上一个地址作为跳板，拿到下一个地址，下面我们直接计算前面所有大小
+```go
+package main
+
+import (
+	"fmt"
+	"reflect"
+	"unsafe"
+
+	"github.com/2637309949/demo/p"
+)
+
+func main() {
+	n := p.Profile{Name: "double"}
+	nPointer := unsafe.Pointer(&n)
+
+	// 我们向下转成int(QAQ)
+	age := (*int)(unsafe.Pointer(uintptr(nPointer) + unsafe.Sizeof(reflect.Zero(reflect.TypeOf(new(string)).Elem()).Interface())))
+	*age = 18
+
+	// bug??
+	// fmt.Println(unsafe.Sizeof(reflect.Zero(reflect.TypeOf(new(int64)).Elem()).Interface()))
+	// fmt.Println(reflect.TypeOf(reflect.Zero(reflect.TypeOf(new(int64)).Elem()).Interface()))
+	// fmt.Println(reflect.Zero(reflect.TypeOf(new(int64)).Elem()).Interface())
+
+	// fmt.Println(unsafe.Sizeof(int64(0)))
+	// fmt.Println(reflect.TypeOf(int64(0)))
+	// fmt.Println(int64(0))
+
+	address := (*string)(unsafe.Pointer(
+		uintptr(nPointer) +
+			unsafe.Sizeof(reflect.Zero(reflect.TypeOf(new(string)).Elem()).Interface()) +
+			unsafe.Sizeof(int64(0))))
+	*address = "GZ"
+
+	hoppy := (*string)(unsafe.Pointer(
+		uintptr(nPointer) +
+			unsafe.Sizeof(reflect.Zero(reflect.TypeOf(new(string)).Elem()).Interface()) +
+			unsafe.Sizeof(int64(0)) +
+			unsafe.Sizeof(reflect.Zero(reflect.TypeOf(new(string)).Elem()).Interface())))
+	*hoppy = "开玩笑"
+	fmt.Println(n)
+}
+```
+```sh
+[Running] go run "/home/double/Work/GO/demo/main.go"
+{double 18 GZ 开玩笑}
+```
