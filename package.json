@@ -8,7 +8,7 @@
   "scripts": {
     "build": "hexo g",
     "deploy": "hexo clean && hexo g && netlify deploy --prod",
-    "start": "hexo server -p 8080",
+    "start": "hexo server -p 9081",
     "clean": "hexo clean"
   },
   "dependencies": {
