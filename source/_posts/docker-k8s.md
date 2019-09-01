@@ -59,6 +59,18 @@ microk8s.enable dns
 我们看到rancher已经有一个coredns-f7867546d-skmmz被启动了
 
 ### dashboard
+microk8s开启dashboard
+```sh
+microk8s.enable dashboard
+```
+我们看到rancher已经有一个kubernetes-dashboard-7d75c474bb-p5rqn被启动了
+
+不过该dashboard还处理集群内部中，我们可以通过kubectl proxy的方式去访问服务，不过我们统一用ingresss来处理吧。
+由于默认的dashbord是ssl的，对于部署需要注意的事项可以参考：
+[https://tonybai.com/2018/06/25/the-kubernetes-ingress-practice-for-https-service/](https://tonybai.com/2018/06/25/the-kubernetes-ingress-practice-for-https-service/)
+
+
+
 ### storage
 ### ingress
 Ingress原理
@@ -86,10 +98,95 @@ Repository: https://github.com/kubernetes/ingress-nginx
 -------------------------------------------------------------------------------
 ```
 
-其实rancher是自带ingress负载的，我们这边只是为了演示
+```sh
+double@double:~$ sudo netstat -tnlp | grep :443
+tcp        0      0 0.0.0.0:443             0.0.0.0:*               LISTEN      18870/nginx: master 
+tcp        0      0 0.0.0.0:443             0.0.0.0:*               LISTEN      18870/nginx: master 
+tcp        0      0 0.0.0.0:443             0.0.0.0:*               LISTEN      18870/nginx: master 
+tcp        0      0 0.0.0.0:443             0.0.0.0:*               LISTEN      18870/nginx: master 
+tcp        0      0 0.0.0.0:443             0.0.0.0:*               LISTEN      18870/nginx: master 
+tcp        0      0 0.0.0.0:443             0.0.0.0:*               LISTEN      18870/nginx: master 
+tcp        0      0 0.0.0.0:443             0.0.0.0:*               LISTEN      18870/nginx: master 
+tcp        0      0 0.0.0.0:443             0.0.0.0:*               LISTEN      18870/nginx: master 
+tcp6       0      0 :::443                  :::*                    LISTEN      18870/nginx: master 
+tcp6       0      0 :::443                  :::*                    LISTEN      18870/nginx: master 
+tcp6       0      0 :::443                  :::*                    LISTEN      18870/nginx: master 
+tcp6       0      0 :::443                  :::*                    LISTEN      18870/nginx: master 
+tcp6       0      0 :::443                  :::*                    LISTEN      18870/nginx: master 
+tcp6       0      0 :::443                  :::*                    LISTEN      18870/nginx: master 
+tcp6       0      0 :::443                  :::*                    LISTEN      18870/nginx: master 
+tcp6       0      0 :::443                  :::*                    LISTEN      18870/nginx: master 
+double@double:~$ sudo netstat -tnlp | grep :80
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      18870/nginx: master 
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      18870/nginx: master 
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      18870/nginx: master 
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      18870/nginx: master 
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      18870/nginx: master 
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      18870/nginx: master 
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      18870/nginx: master 
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      18870/nginx: master 
+tcp        0      0 127.0.0.1:8080          0.0.0.0:*               LISTEN      12114/kube-apiserve 
+tcp6       0      0 :::80                   :::*                    LISTEN      18870/nginx: master 
+tcp6       0      0 :::80                   :::*                    LISTEN      18870/nginx: master 
+tcp6       0      0 :::80                   :::*                    LISTEN      18870/nginx: master 
+tcp6       0      0 :::80                   :::*                    LISTEN      18870/nginx: master 
+tcp6       0      0 :::80                   :::*                    LISTEN      18870/nginx: master 
+tcp6       0      0 :::80                   :::*                    LISTEN      18870/nginx: master 
+tcp6       0      0 :::80                   :::*                    LISTEN      18870/nginx: master 
+tcp6       0      0 :::80                   :::*                    LISTEN      18870/nginx: master 
+```
+
+我们可以通过rancher的界面管理我们的ingress，我们把之前的inspiration打包进3200registry
+```sh
+docker tag bfe6dde444a9 localhost:32000/inspiration:registry
+docker push localhost:32000/inspiration
+```
+然后在rancher创建app
+![](/images/k8s/inspiration.png)
+
+接着创建ingress
+![](/images/k8s/inspiration_lb.png)
+
+由于我们的inspiration是静态网页，资源是/目录的，所以我们这里直接把根目录划给inspiration
+
+接着在本机创建host
+```sh
+127.0.0.1 dashbord.microk8s.com
+```
+
+最后访问
+![](/images/k8s/inspiration_web.png)
+
+
 ### gpu
 ### istio
 ### registry
+registry的搭建可以看我的另一篇`Nexus3搭建私有仓库`
+
+microk8s自带一个registry，我们开启它
+```sh
+microk8s.enable registry
+```
+我们试着把本地inspiration推上32000
+
+```sh
+docker tag bfe6dde444a9 localhost:32000/inspiration:registry
+```
+
+```sh
+double@double:~$ docker push localhost:32000/inspiration 
+The push refers to repository [localhost:32000/inspiration]
+6aea07e1609d: Layer already exists 
+e00130921dc2: Layer already exists 
+e0e384814422: Layer already exists 
+a38699e45aa7: Layer already exists 
+77edc51b295a: Layer already exists 
+33b1e8df5729: Layer already exists 
+acdd6738af44: Layer already exists 
+03901b4a2ea8: Layer already exists 
+registry: digest: sha256:42fc45659bdf6135733ba76b2fe89d9b596b96cf32987f2749966bc16dcecd36 size: 1993
+```
+
 ### metrics-server
 ### prometheus
 ### fluentd
