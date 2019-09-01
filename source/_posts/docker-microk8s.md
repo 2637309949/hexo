@@ -247,7 +247,9 @@ ca.crt:     1099 bytes
 
 ### Proxy
 由于k8s网络接口不在本机同一个网络，我们proxy一下，其实也就是nat
+```sh
 microk8s.kubectl proxy --accept-hosts=.* --address=0.0.0.0 &
+```
 
 打开网址，用我们上面的kubernetes-dashboard-token登录
 http://127.0.0.1:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
@@ -256,6 +258,101 @@ http://127.0.0.1:8001/api/v1/namespaces/kube-system/services/https:kubernetes-da
 ![](/images/microk8s/dashboard.png)
 
 公司里用的rancher，体验比k8s官方提供的相对好用些。。。
+
+尝试使用rancher管理microk8s
+
+导出microk8s配置
+```sh
+microk8s.kubectl config view --raw > $HOME/.microk8s/config
+```
+
+本地安装rancher
+```sh
+sudo docker run -d --restart=unless-stopped -v /home/double/docker/data/srv/volume/rancher:/var/lib/rancher/ -p 8888:80 -p 3043:443 rancher/rancher:stable
+```
+
+界面点击通过import方式创建集群，接着
+记得要本地IP去apply yml，不然会出现下面的问题（qaq，这个问题在stackover找了半天，最后自已查出来的，emm..,这就是用就rancher ui的后果，很多细节都忘了）
+```sh
+double@double:~/docker/data/srv/volume/rancher$ microk8s.kubectl create clusterrolebinding cluster-admin-binding --clusterrole cluster-admin --user admin
+double@double:~/docker/data/srv/volume/rancher$ microk8s.kubectl apply -f https://192.168.43.137:3043/v3/import/pqwt69qtmplvlqw9qfsctxpvvtgx9zvt5ht6cxhmtph64p5gxfljf8.yaml
+Unable to connect to the server: x509: certificate signed by unknown authority
+double@double:~/docker/data/srv/volume/rancher$ curl --insecure -sfL https://192.168.43.137:3043/v3/import/pqwt69qtmplvlqw9qfsctxpvvtgx9zvt5ht6cxhmtph64p5gxfljf8.yaml | microk8s.kubectl apply -f -
+clusterrole.rbac.authorization.k8s.io/proxy-clusterrole-kubeapiserver created
+clusterrolebinding.rbac.authorization.k8s.io/proxy-role-binding-kubernetes-master created
+namespace/cattle-system created
+serviceaccount/cattle created
+clusterrolebinding.rbac.authorization.k8s.io/cattle-admin-binding created
+secret/cattle-credentials-e628770 created
+clusterrole.rbac.authorization.k8s.io/cattle-admin created
+deployment.extensions/cattle-cluster-agent created
+The DaemonSet "cattle-node-agent" is invalid: spec.template.spec.containers[0].securityContext.privileged: Forbidden: disallowed by cluster policy
+```
+
+看到报错Forbidden: disallowed by cluster policy
+
+解决方式
+Add --allow-privileged=true to:
+
+kubelet config
+```sh
+# 注意：在1.15之后的kubelet已经去掉--allow-privileged，https://github.com/ubuntu/microk8s/issues/583
+sudo vim /var/snap/microk8s/current/args/kubelet
+```
+
+kube-apiserver config
+```sh
+sudo vim /var/snap/microk8s/current/args/kube-apiserver
+```
+Restart services:
+```sh
+sudo systemctl restart snap.microk8s.daemon-kubelet.service
+sudo systemctl restart snap.microk8s.daemon-apiserver.service
+```
+
+查看pod
+```sh
+double@double:~$ microk8s.kubectl get pods --all-namespaces
+NAMESPACE            NAME                                              READY   STATUS             RESTARTS   AGE
+cattle-system        cattle-cluster-agent-54d5bd5bb6-kgj8d             0/1     CrashLoopBackOff   20         10h
+cattle-system        cattle-node-agent-zvzrx                           1/1     Running            0          9h
+container-registry   registry-6c99589dc-2bzvh                          1/1     Running            4          14h
+kube-system          coredns-f7867546d-skmmz                           1/1     Running            3          13h
+kube-system          heapster-v1.5.2-844b564688-g7554                  4/4     Running            6          13h
+kube-system          hostpath-provisioner-65cfd8595b-hjmc6             1/1     Running            3          14h
+kube-system          kubernetes-dashboard-7d75c474bb-p5rqn             1/1     Running            3          13h
+kube-system          monitoring-influxdb-grafana-v4-6b6954958c-ssc98   2/2     Running            6          13h
+```
+
+还是没启动，通过describe查看
+```sh
+double@double:~$ microk8s.kubectl describe pod cattle-cluster-agent-54d5bd5bb6-kgj8d -n cattle-system
+Name:           cattle-cluster-agent-54d5bd5bb6-kgj8d
+Namespace:      cattle-system
+...
+...
+Events:
+  Type     Reason          Age                     From             Message
+  ----     ------          ----                    ----             -------
+  Warning  BackOff         9h (x85 over 10h)       kubelet, double  Back-off restarting failed container
+  Warning  FailedMount     19m                     kubelet, double  MountVolume.SetUp failed for volume "cattle-credentials" : couldn't propagate object cache: timed out waiting for the condition
+  Warning  FailedMount     19m                     kubelet, double  MountVolume.SetUp failed for volume "cattle-token-2w8t9" : couldn't propagate object cache: timed out waiting for the condition
+  Normal   SandboxChanged  19m                     kubelet, double  Pod sandbox changed, it will be killed and re-created.
+```
+
+问题出在挂载上了，找不出具体原因，在microk8s/issues提交报告。。。
+
+我们继续查找。。。。
+
+
+最后发现其实是我们在apply这个yml文件时，因为这个yml是从rancher下载下来的，查看里面的CATTLE_SERVER居然是127.0.0.1，这个明显不对（QAQ，不同网段至少指定IP，不然NAT不过去），马上改成本机的IP，然后部署
+
+![](/images/microk8s/dashbord.png)
+
+![](/images/microk8s/rancher.png)
+
+
+
 
 ### 移除MicroK8s
 ```sh
