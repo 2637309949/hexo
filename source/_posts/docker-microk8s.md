@@ -424,7 +424,9 @@ Events:
   Warning  FailedCreatePodSandBox  15s (x4 over 2m20s)   kubelet, double    Failed create pod sandbox: rpc error: code = Unknown desc = failed to get sandbox image "k8s.gcr.io/pause:3.1": failed to pull image "k8s.gcr.io/pause:3.1": failed to resolve image "k8s.gcr.io/pause:3.1": no available registry endpoint: failed to do request: Head https://k8s.gcr.io/v2/pause/manifests/3.1: dial tcp [2404:6800:4008:c00::52]:443: i/o timeout
 ```
 
-手动创建该镜像（或者使用mirrorgooglecontainers/pause:3.1）
+目标地址被墙了，手动创建该镜像（或者使用mirrorgooglecontainers/pause:3.1），这个拉取打标签可以使用脚本去执行
+https://www.cnblogs.com/tylerzhou/p/10971341.html
+
 ```sh
 docker pull anjia0532/pause:3.1
 docker tag anjia0532/pause:3.1 k8s.gcr.io/pause:3.1
