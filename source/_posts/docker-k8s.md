@@ -70,8 +70,8 @@ microk8s.enable dashboard
 [https://tonybai.com/2018/06/25/the-kubernetes-ingress-practice-for-https-service/](https://tonybai.com/2018/06/25/the-kubernetes-ingress-practice-for-https-service/)
 
 
-
 ### storage
+
 ### ingress
 Ingress原理
 [https://www.cnblogs.com/linuxk/p/9706720.html](https://www.cnblogs.com/linuxk/p/9706720.html)
@@ -196,11 +196,7 @@ registry: digest: sha256:42fc45659bdf6135733ba76b2fe89d9b596b96cf32987f2749966bc
 ### knative
 ### helm
 ### cilium
-
-
-
-
-
+### cert
 
 参考链接
 [https://yeasy.gitbooks.io/docker_practice/kubernetes/concepts.html](https://yeasy.gitbooks.io/docker_practice/kubernetes/concepts.html)
